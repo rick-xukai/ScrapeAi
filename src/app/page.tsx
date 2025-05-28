@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ToastProvider } from "@/components/ui/toast";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/sections/HeroSection";

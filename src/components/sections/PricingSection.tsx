@@ -208,7 +208,7 @@ export default function PricingSection() {
                 What happens if I exceed my limit?
               </h4>
               <p className="text-gray-600 dark:text-gray-300">
-                We'll notify you before you reach your limit. You can upgrade or purchase additional pages.
+                We&apos;ll notify you before you reach your limit. You can upgrade or purchase additional pages.
               </p>
             </div>
             

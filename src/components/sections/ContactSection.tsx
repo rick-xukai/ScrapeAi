@@ -1,69 +1,91 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/toast";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/components/ui/toast';
 
 export default function ContactSection() {
   const { showToast } = useToast();
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    company: "",
-    message: ""
+    firstName: '',
+    lastName: '',
+    email: '',
+    company: '',
+    message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
-      showToast("warning", "Please Fill Required Fields", "Please make sure to fill in all fields marked with *.");
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.message
+    ) {
+      showToast(
+        'warning',
+        'Please Fill Required Fields',
+        'Please make sure to fill in all fields marked with *.'
+      );
       return;
     }
 
     setIsSubmitting(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-      showToast("success", "Message Sent Successfully!", "Thank you for contacting us. We'll get back to you within 24 hours.");
-      
+      showToast(
+        'success',
+        'Message Sent Successfully!',
+        "Thank you for contacting us. We'll get back to you within 24 hours."
+      );
+
       // Reset form after 3 seconds
       setTimeout(() => {
         setIsSubmitted(false);
         setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          company: "",
-          message: ""
+          firstName: '',
+          lastName: '',
+          email: '',
+          company: '',
+          message: '',
         });
       }, 3000);
     }, 2000);
   };
 
   const handleEnterpriseDemo = () => {
-    showToast("info", "Enterprise Solutions", "Thank you for your interest in our Enterprise solution! Our enterprise team will contact you within 24 hours to schedule a personalized demo.");
+    showToast(
+      'info',
+      'Enterprise Solutions',
+      'Thank you for your interest in our Enterprise solution! Our enterprise team will contact you within 24 hours to schedule a personalized demo.'
+    );
   };
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-purple-50 to-white dark:from-gray-800 dark:to-gray-900">
+    <section
+      id="contact"
+      className="py-20 bg-gradient-to-br from-purple-50 to-white dark:from-gray-800 dark:to-gray-900"
+    >
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <motion.div
@@ -79,7 +101,8 @@ export default function ContactSection() {
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Ready to transform your data extraction process? We're here to help you get started.
+            Ready to transform your data extraction process? We&apos;re here to help
+            you get started.
           </p>
         </motion.div>
 
@@ -109,7 +132,8 @@ export default function ContactSection() {
                       Message Sent Successfully!
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300">
-                      Thank you for contacting us. We'll get back to you within 24 hours.
+                      Thank you for contacting us. We&apos;ll get back to you within
+                      24 hours.
                     </p>
                   </motion.div>
                 ) : (
@@ -144,7 +168,7 @@ export default function ContactSection() {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email *
@@ -159,7 +183,7 @@ export default function ContactSection() {
                         required
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Company
@@ -173,7 +197,7 @@ export default function ContactSection() {
                         placeholder="Your Company"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Message *
@@ -188,8 +212,8 @@ export default function ContactSection() {
                         required
                       />
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       type="submit"
                       disabled={isSubmitting}
                       className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-3 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -222,11 +246,12 @@ export default function ContactSection() {
           >
             <div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                Let's start a conversation
+                Let&apos;s start a conversation
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                Whether you're looking to extract data for research, business intelligence, 
-                or competitive analysis, our team is ready to help you succeed.
+                Whether you&apos;re looking to extract data for research, business
+                intelligence, or competitive analysis, our team is ready to help
+                you succeed.
               </p>
             </div>
 
@@ -239,8 +264,12 @@ export default function ContactSection() {
                   <Mail className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Email</h4>
-                  <p className="text-gray-600 dark:text-gray-300">hello@scrapeai.com</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    Email
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    hello@scrapeai.com
+                  </p>
                 </div>
               </motion.div>
 
@@ -252,8 +281,12 @@ export default function ContactSection() {
                   <Phone className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Phone</h4>
-                  <p className="text-gray-600 dark:text-gray-300">+1 (555) 123-4567</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    Phone
+                  </h4>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    +1 (555) 123-4567
+                  </p>
                 </div>
               </motion.div>
 
@@ -265,9 +298,12 @@ export default function ContactSection() {
                   <MapPin className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white">Office</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">
+                    Office
+                  </h4>
                   <p className="text-gray-600 dark:text-gray-300">
-                    123 AI Street<br />
+                    123 AI Street
+                    <br />
                     San Francisco, CA 94105
                   </p>
                 </div>
@@ -277,10 +313,10 @@ export default function ContactSection() {
             <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-2xl p-6 text-white">
               <h4 className="font-bold text-lg mb-2">Enterprise Solutions</h4>
               <p className="text-purple-100 mb-4">
-                Need a custom solution for your organization? Our enterprise team 
-                can help you build the perfect data extraction pipeline.
+                Need a custom solution for your organization? Our enterprise
+                team can help you build the perfect data extraction pipeline.
               </p>
-              <Button 
+              <Button
                 onClick={handleEnterpriseDemo}
                 className="bg-white text-purple-600 hover:bg-gray-100"
               >
@@ -292,4 +328,4 @@ export default function ContactSection() {
       </div>
     </section>
   );
-} 
+}

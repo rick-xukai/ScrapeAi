@@ -3,7 +3,6 @@
 import { useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Mesh, ShaderMaterial, Vector2 } from "three";
-import * as THREE from "three";
 
 const WaterRippleShader = {
   vertexShader: `

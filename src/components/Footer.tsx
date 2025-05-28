@@ -2,7 +2,6 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { Github, Linkedin, Mail } from 'lucide-react';
 
 // Custom X (Twitter) Icon Component
 const XIcon = ({ className }: { className?: string }) => (
