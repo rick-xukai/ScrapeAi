@@ -1,101 +1,130 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Mesh, ShaderMaterial, Vector2 } from "three";
+import { Group, Vector3, Points } from "three";
 
-const WaterRippleShader = {
-  vertexShader: `
-    uniform float u_time;
-    uniform vec2 u_mouse;
-    uniform float u_radius;
-    varying vec2 vUv;
-    
-    void main() {
-      vUv = uv;
-      vec3 pos = position;
-      float dist = distance(uv, u_mouse);
-      if (dist < u_radius) {
-        float strength = (u_radius - dist) / u_radius;
-        pos.z += sin(dist * 20.0 - u_time * 4.0) * 0.1 * strength;
-      }
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-    }
-  `,
-  fragmentShader: `
-    uniform float u_time;
-    uniform vec2 u_mouse;
-    uniform float u_radius;
-    varying vec2 vUv;
-    
-    void main() {
-      float dist = distance(vUv, u_mouse);
-      float strength = 1.0 - smoothstep(0.0, u_radius, dist);
-      
-      vec3 color1 = vec3(0.627, 0.125, 0.9); // Purple
-      vec3 color2 = vec3(0.4, 0.0, 0.8); // Darker purple
-      vec3 color = mix(color1, color2, strength);
-      
-      float alpha = 0.3 + strength * 0.2;
-      gl_FragColor = vec4(color, alpha);
-    }
-  `,
-};
-
-function WaterRippleMesh() {
-  const meshRef = useRef<Mesh>(null);
-  const mouseRef = useRef(new Vector2(0.5, 0.5));
-  const { viewport, mouse } = useThree();
-
-  const uniforms = useMemo(
-    () => ({
-      u_time: { value: 0 },
-      u_mouse: { value: new Vector2(0.5, 0.5) },
-      u_radius: { value: 0.25 },
-    }),
-    []
-  );
+function Particle({ position, color, index }: { position: Vector3; color: string; index: number }) {
+  const meshRef = useRef<Points>(null);
+  const { mouse } = useThree();
+  const basePosition = useMemo(() => position.clone(), [position]);
 
   useFrame((state) => {
     if (meshRef.current) {
-      const material = meshRef.current.material as ShaderMaterial;
-      material.uniforms.u_time.value = state.clock.elapsedTime;
+      const time = state.clock.elapsedTime;
       
-      // Convert mouse position to UV coordinates
-      const x = (mouse.x + 1) / 2;
-      const y = (mouse.y + 1) / 2;
+      // 基础浮动动画 - 使用偏移而不是直接修改position
+      const offsetY = Math.sin(time * 0.5 + index * 0.1) * 0.08;
+      const offsetX = Math.cos(time * 0.3 + index * 0.05) * 0.04;
       
-      // Smooth mouse movement
-      mouseRef.current.x += (x - mouseRef.current.x) * 0.1;
-      mouseRef.current.y += (y - mouseRef.current.y) * 0.1;
+      meshRef.current.position.set(
+        basePosition.x + offsetX,
+        basePosition.y + offsetY,
+        basePosition.z
+      );
       
-      material.uniforms.u_mouse.value.set(mouseRef.current.x, mouseRef.current.y);
+      // 鼠标交互
+      const mouseX = mouse.x * 4;
+      const mouseY = mouse.y * 4;
+      const dx = mouseX - meshRef.current.position.x;
+      const dy = mouseY - meshRef.current.position.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < 1.5) {
+        const force = (1.5 - distance) / 1.5;
+        meshRef.current.position.x += dx * force * 0.003;
+        meshRef.current.position.y += dy * force * 0.003;
+      }
     }
   });
 
   return (
-    <mesh ref={meshRef} scale={[viewport.width, viewport.height, 1]}>
-      <planeGeometry args={[1, 1, 64, 64]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={WaterRippleShader.vertexShader}
-        fragmentShader={WaterRippleShader.fragmentShader}
+    <points ref={meshRef} position={basePosition}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[new Float32Array([0, 0, 0]), 3]} />
+      </bufferGeometry>
+      <pointsMaterial 
+        color={color}
+        size={2.0}
         transparent
-        depthWrite={false}
+        opacity={0.7}
+        sizeAttenuation={false}
       />
-    </mesh>
+    </points>
+  );
+}
+
+function ParticleField() {
+  const groupRef = useRef<Group>(null);
+  
+  const particles = useMemo(() => {
+    const count = 300;
+    const particleArray = [];
+    
+    for (let i = 0; i < count; i++) {
+      const position = new Vector3(
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 8,
+        (Math.random() - 0.5) * 3
+      );
+      
+      // 紫色系颜色
+      const colors = ['#8b5cf6', '#a855f7', '#9333ea', '#7c3aed', '#6d28d9'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      
+      particleArray.push({ position, color, index: i });
+    }
+    
+    return particleArray;
+  }, []);
+
+  useFrame((state) => {
+    if (groupRef.current) {
+      const time = state.clock.elapsedTime;
+      groupRef.current.rotation.y = time * 0.01;
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      {particles.map((particle, index) => (
+        <Particle
+          key={index}
+          position={particle.position}
+          color={particle.color}
+          index={particle.index}
+        />
+      ))}
+    </group>
   );
 }
 
 export default function WaterRipple() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/3 to-pink-500/5" />
+    );
+  }
+
   return (
     <div className="absolute inset-0 w-full h-full">
       <Canvas
-        camera={{ position: [0, 0, 1], fov: 75 }}
+        camera={{ position: [0, 0, 5], fov: 75 }}
         style={{ background: "transparent" }}
+        gl={{ alpha: true, antialias: true }}
       >
-        <WaterRippleMesh />
+        <ambientLight intensity={0.5} />
+        <ParticleField />
       </Canvas>
+      
+      {/* 渐变背景覆盖 */}
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-500/3 via-transparent to-blue-500/3 pointer-events-none" />
     </div>
   );
 } 
